@@ -30,7 +30,7 @@ export function useVersionCheck() {
                 label: 'View on GitHub',
                 onClick: () => {
                   window.open(
-                    'https://github.com/lfnovo/open-notebook',
+                    'https://github.com/DariuszCiesielski/NotebookLM-Reimagined',
                     '_blank',
                     'noopener,noreferrer'
                   )

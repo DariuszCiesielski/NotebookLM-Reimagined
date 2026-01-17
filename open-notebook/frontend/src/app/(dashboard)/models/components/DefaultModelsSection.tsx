@@ -163,7 +163,7 @@ export function DefaultModelsSection({ models, defaults }: DefaultModelsSectionP
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Missing required models: {missingRequired.join(', ')}. 
+              Missing required models: {missingRequired.join(', ')}.
               Open Notebook may not function properly without these.
             </AlertDescription>
           </Alert>
@@ -173,7 +173,7 @@ export function DefaultModelsSection({ models, defaults }: DefaultModelsSectionP
           {defaultConfigs.map((config) => {
             const availableModels = getModelsForType(config.modelType)
             const currentValue = watch(config.key) || undefined
-            
+
             // Check if the current value exists in available models
             const isValidModel = currentValue && availableModels.some(m => m.id === currentValue)
 
@@ -190,11 +190,11 @@ export function DefaultModelsSection({ models, defaults }: DefaultModelsSectionP
                   >
                     <SelectTrigger className={
                       config.required && !isValidModel && availableModels.length > 0
-                        ? 'border-destructive' 
+                        ? 'border-destructive'
                         : ''
                     }>
                       <SelectValue placeholder={
-                        config.required && !isValidModel && availableModels.length > 0 
+                        config.required && !isValidModel && availableModels.length > 0
                           ? "⚠️ Required - Select a model"
                           : "Select a model"
                       } />
@@ -231,7 +231,7 @@ export function DefaultModelsSection({ models, defaults }: DefaultModelsSectionP
 
         <div className="pt-4 border-t">
           <a
-            href="https://github.com/lfnovo/open-notebook/blob/main/docs/features/ai-models.md"
+            href="https://github.com/DariuszCiesielski/NotebookLM-Reimagined/blob/master/docs/features/ai-models.md"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-primary hover:underline"

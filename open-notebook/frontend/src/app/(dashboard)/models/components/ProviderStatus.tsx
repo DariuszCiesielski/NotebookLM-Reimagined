@@ -35,7 +35,7 @@ export function ProviderStatus({ providers }: ProviderStatusProps) {
       <CardHeader>
         <CardTitle>AI Providers</CardTitle>
         <CardDescription>
-          Configure providers through environment variables to enable their models. 
+          Configure providers through environment variables to enable their models.
           <span className="ml-1">
             {providers.available.length} of {allProviders.length} configured
           </span>
@@ -49,15 +49,13 @@ export function ProviderStatus({ providers }: ProviderStatusProps) {
             return (
               <div
                 key={provider.name}
-                className={`flex items-center gap-3 rounded-lg border px-4 py-3 transition-colors ${
-                  provider.available ? 'bg-card' : 'bg-muted/40'
-                }`}
+                className={`flex items-center gap-3 rounded-lg border px-4 py-3 transition-colors ${provider.available ? 'bg-card' : 'bg-muted/40'
+                  }`}
               >
-                <div className={`flex items-center justify-center rounded-full p-1.5 ${
-                  provider.available
+                <div className={`flex items-center justify-center rounded-full p-1.5 ${provider.available
                     ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-300'
                     : 'bg-muted-foreground/10 text-muted-foreground'
-                }`}>
+                  }`}>
                   {provider.available ? (
                     <Check className="h-3.5 w-3.5" />
                   ) : (
@@ -67,9 +65,8 @@ export function ProviderStatus({ providers }: ProviderStatusProps) {
 
                 <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
                   <span
-                    className={`truncate text-sm font-medium capitalize ${
-                      !provider.available ? 'text-muted-foreground' : 'text-foreground'
-                    }`}
+                    className={`truncate text-sm font-medium capitalize ${!provider.available ? 'text-muted-foreground' : 'text-foreground'
+                      }`}
                   >
                     {provider.name}
                   </span>
@@ -111,7 +108,7 @@ export function ProviderStatus({ providers }: ProviderStatusProps) {
 
         <div className="mt-6 pt-4 border-t">
           <a
-            href="https://github.com/lfnovo/open-notebook/blob/main/docs/features/ai-models.md"
+            href="https://github.com/DariuszCiesielski/NotebookLM-Reimagined/blob/master/docs/features/ai-models.md"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-primary hover:underline"
