@@ -4,6 +4,17 @@ const nextConfig: NextConfig = {
   // Note: 'output: standalone' is only for Docker deployment
   // Vercel uses its own optimized build process
 
+  // Redirects: Handle root path redirect
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/notebooks',
+        permanent: false,
+      },
+    ]
+  },
+
   // API Rewrites: Proxy /api/* requests to FastAPI backend
   // This simplifies reverse proxy configuration - users only need to proxy to port 8502
   // Next.js handles internal routing to the API backend on port 5055
