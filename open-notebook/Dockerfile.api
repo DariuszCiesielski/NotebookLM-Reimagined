@@ -1,0 +1,39 @@
+# Simple API-only Dockerfile for Railway deployment
+FROM python:3.12-slim-bookworm
+
+# Install uv using the official method
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Install system dependencies
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+    ffmpeg \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
+
+# Set the working directory
+WORKDIR /app
+
+# Copy dependency files first for better caching
+COPY pyproject.toml uv.lock ./
+COPY open_notebook/__init__.py ./open_notebook/__init__.py
+
+# Install dependencies
+RUN uv sync --frozen --no-dev
+
+# Copy the rest of the application
+COPY . /app
+
+# Create data directory
+RUN mkdir -p /app/data
+
+# Expose API port
+EXPOSE 5055
+
+# Run the API server
+CMD ["uv", "run", "python", "run_api.py"]
