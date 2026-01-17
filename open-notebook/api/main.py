@@ -126,3 +126,9 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
+
+
+@app.get("/api/docs")
+async def api_docs_redirect():
+    """Endpoint for Railway healthcheck compatibility"""
+    return {"status": "healthy", "docs": "/docs"}
