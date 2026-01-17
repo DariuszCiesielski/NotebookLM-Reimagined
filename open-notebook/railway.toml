@@ -3,5 +3,6 @@
 dockerfilePath = "Dockerfile.api"
 
 [deploy]
-healthcheckPath = "/api/docs"
+healthcheckPath = "/health"
 healthcheckTimeout = 300
+
