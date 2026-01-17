@@ -1,0 +1,8 @@
+# Railway configuration for API-only deployment
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "uv run python run_api.py"
+healthcheckPath = "/api/docs"
+healthcheckTimeout = 300
