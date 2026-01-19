@@ -3,12 +3,13 @@
 ## Wymagane credentials w n8n
 
 ### 1. Supabase API
-- URL: `https://avccabohbvtemhispguz.supabase.co`
-- Service Role Key: `***REMOVED***`
+- URL: `https://YOUR_PROJECT.supabase.co`
+- Service Role Key: `YOUR_SUPABASE_SERVICE_ROLE_KEY` (from Supabase Dashboard → Settings → API)
 
 ### 2. Gemini API (HTTP Query Auth)
 - Parameter Name: `key`
-- Value: `***REMOVED***`
+- Value: `YOUR_GOOGLE_API_KEY` (from Google AI Studio)
+
 
 ---
 

@@ -172,6 +172,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       md: 'txt',
     };
 
+    // For text files, extract content and store in metadata
+    let textContent: string | undefined;
+    if (ext === 'txt' || ext === 'md') {
+      textContent = buffer.toString('utf-8');
+    }
+
     const { data: source, error } = await supabase
       .from('sources')
       .insert({
@@ -183,12 +189,18 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         original_filename: filename,
         mime_type: file.type,
         file_size_bytes: buffer.length,
+        metadata: textContent ? { content: textContent.slice(0, 100000) } : {},
       })
       .select()
       .single();
 
     if (error) {
       return NextResponse.json({ error: 'Failed to create source' }, { status: 400 });
+    }
+
+    // Process text files with RAG
+    if (textContent) {
+      processSourceContent(source.id, textContent).catch(console.error);
     }
 
     return NextResponse.json({ data: source });
