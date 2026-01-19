@@ -15,6 +15,7 @@ from app.services.auth import get_current_user
 from app.services.supabase_client import get_supabase_client
 from app.services.gemini import gemini_service
 from app.services.persona_utils import build_persona_instructions
+from app.services.rag import rag_service
 
 router = APIRouter(prefix="/notebooks/{notebook_id}/chat", tags=["chat"])
 
@@ -36,7 +37,7 @@ async def verify_notebook_access(notebook_id: UUID, user_id: str):
 
 
 async def get_sources_content(notebook_id: UUID, source_ids: Optional[List[UUID]] = None):
-    """Get content from sources for RAG context."""
+    """Get content from sources for RAG context (legacy - used as fallback)."""
     supabase = get_supabase_client()
 
     query = supabase.table("sources").select("*").eq("notebook_id", str(notebook_id)).eq("status", "ready")
@@ -69,6 +70,59 @@ async def get_sources_content(notebook_id: UUID, source_ids: Optional[List[UUID]
     return "\n".join(context_parts), sources, source_names
 
 
+async def get_rag_context(notebook_id: UUID, query: str, source_ids: Optional[List[UUID]] = None, match_count: int = 10):
+    """
+    Get context using RAG vector search.
+    Returns the most relevant chunks for the given query.
+    """
+    supabase = get_supabase_client()
+    
+    # Use RAG service to find relevant chunks
+    try:
+        chunks = await rag_service.search(
+            query=query,
+            notebook_id=str(notebook_id),
+            supabase_client=supabase,
+            source_ids=[str(sid) for sid in source_ids] if source_ids else None,
+            match_count=match_count
+        )
+    except Exception as e:
+        # Fallback to legacy method if RAG search fails
+        print(f"RAG search failed, using fallback: {e}")
+        return await get_sources_content(notebook_id, source_ids)
+    
+    if not chunks:
+        # No chunks found, try fallback
+        return await get_sources_content(notebook_id, source_ids)
+    
+    # Get source details for citations
+    source_ids_from_chunks = list(set(c["source_id"] for c in chunks))
+    sources_result = supabase.table("sources").select("*").in_("id", source_ids_from_chunks).execute()
+    sources = {s["id"]: s for s in (sources_result.data or [])}
+    
+    # Build context from chunks
+    context_parts = []
+    source_names = []
+    seen_sources = set()
+    
+    for i, chunk in enumerate(chunks, 1):
+        source = sources.get(chunk["source_id"], {})
+        source_name = source.get("name", "Unknown")
+        
+        if source_name not in seen_sources:
+            source_names.append(source_name)
+            seen_sources.add(source_name)
+        
+        similarity = chunk.get("similarity", 0)
+        context_parts.append(
+            f"[{i}] Source: {source_name} (relevance: {similarity:.2f})\n{chunk['content']}\n"
+        )
+    
+    sources_list = [sources.get(sid, {"id": sid, "name": "Unknown"}) for sid in source_ids_from_chunks]
+    
+    return "\n\n".join(context_parts), sources_list, source_names
+
+
 @router.post("", response_model=ApiResponse)
 async def send_message(
     notebook_id: UUID,
@@ -92,8 +146,8 @@ async def send_message(
         }).execute()
         session_id = session_result.data[0]["id"]
 
-    # Get source context
-    context, sources, source_names = await get_sources_content(notebook_id, chat.source_ids)
+    # Get source context using RAG vector search
+    context, sources, source_names = await get_rag_context(notebook_id, chat.message, chat.source_ids)
 
     # Save user message
     user_msg = supabase.table("chat_messages").insert({

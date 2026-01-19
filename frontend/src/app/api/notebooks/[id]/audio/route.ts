@@ -149,35 +149,66 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         const { audioData, mimeType } = await generateTTSAudio(scriptForTTS);
         console.log('[AUDIO] TTS success, audio data length:', audioData.length, 'mime:', mimeType);
 
-        // Convert PCM to WAV format for browser compatibility
-        const pcmBuffer = Buffer.from(audioData, 'base64');
-        const wavBuffer = pcmToWav(pcmBuffer);
-        console.log('[AUDIO] Converted to WAV, size:', wavBuffer.length, 'bytes');
+        // Decode base64 audio data
+        const audioBuffer = Buffer.from(audioData, 'base64');
 
-        // Upload audio to Supabase Storage
-        const audioFileName = `audio_${notebookId}_${Date.now()}.wav`;
+        // Determine file extension and content type based on mimeType from Gemini
+        let fileExtension = 'mp3';
+        let contentType = 'audio/mpeg';
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('audio')
-          .upload(audioFileName, wavBuffer, {
-            contentType: 'audio/wav',
-            upsert: true,
-          });
+        if (mimeType.includes('wav') || mimeType.includes('pcm')) {
+          // If it's PCM/WAV, convert to WAV format
+          const wavBuffer = pcmToWav(audioBuffer);
+          fileExtension = 'wav';
+          contentType = 'audio/wav';
 
-        if (uploadError) {
-          console.error('Audio upload error:', uploadError);
+          // Upload WAV to Supabase Storage
+          const audioFileName = `audio_${notebookId}_${Date.now()}.${fileExtension}`;
+          const { error: uploadError } = await supabase.storage
+            .from('audio')
+            .upload(audioFileName, wavBuffer, {
+              contentType,
+              upsert: true,
+            });
+
+          if (uploadError) {
+            console.error('Audio upload error:', uploadError);
+          } else {
+            const { data: urlData } = supabase.storage.from('audio').getPublicUrl(audioFileName);
+            audioUrl = urlData.publicUrl;
+            const bytesPerSecond = 24000 * 2 * 1;
+            durationSeconds = Math.round(audioBuffer.length / bytesPerSecond);
+          }
         } else {
-          // Get public URL
-          const { data: urlData } = supabase.storage.from('audio').getPublicUrl(audioFileName);
+          // For MP3, OGG, or other formats - use directly
+          if (mimeType.includes('mp3') || mimeType.includes('mpeg')) {
+            fileExtension = 'mp3';
+            contentType = 'audio/mpeg';
+          } else if (mimeType.includes('ogg')) {
+            fileExtension = 'ogg';
+            contentType = 'audio/ogg';
+          }
 
-          audioUrl = urlData.publicUrl;
+          // Upload directly to Supabase Storage
+          const audioFileName = `audio_${notebookId}_${Date.now()}.${fileExtension}`;
+          const { error: uploadError } = await supabase.storage
+            .from('audio')
+            .upload(audioFileName, audioBuffer, {
+              contentType,
+              upsert: true,
+            });
 
-          // Calculate actual duration from audio data
-          // WAV: 16-bit mono at 24000Hz = 48000 bytes per second
-          const bytesPerSecond = 24000 * 2 * 1; // sampleRate * bytesPerSample * channels
-          durationSeconds = Math.round(pcmBuffer.length / bytesPerSecond);
-          console.log('[AUDIO] Audio duration:', durationSeconds, 'seconds');
+          if (uploadError) {
+            console.error('Audio upload error:', uploadError);
+          } else {
+            const { data: urlData } = supabase.storage.from('audio').getPublicUrl(audioFileName);
+            audioUrl = urlData.publicUrl;
+            // Estimate duration for non-PCM formats (rough estimate: 1KB = ~0.5 seconds for MP3)
+            durationSeconds = Math.round(audioBuffer.length / 2000);
+          }
         }
+
+        console.log('[AUDIO] Audio uploaded, URL:', audioUrl, 'duration:', durationSeconds, 'seconds');
       } catch (ttsError) {
         console.error('[AUDIO] TTS generation error (continuing with script only):', ttsError);
         console.error(

@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+import { processSourceContent } from '@/lib/rag';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -82,6 +83,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       if (error) {
         return NextResponse.json({ error: 'Failed to create source' }, { status: 400 });
       }
+
+      // Process with RAG in background (non-blocking)
+      processSourceContent(source.id, content).catch(console.error);
 
       return NextResponse.json({ data: source });
     }

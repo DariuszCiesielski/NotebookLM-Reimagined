@@ -15,6 +15,7 @@ from app.models.schemas import (
 from app.services.auth import get_current_user
 from app.services.supabase_client import get_supabase_client
 from app.services.gemini import gemini_service
+from app.services.rag import rag_service
 
 router = APIRouter(prefix="/notebooks/{notebook_id}/sources", tags=["sources"])
 
@@ -93,12 +94,13 @@ async def upload_source(
 
     source = result.data[0]
 
-    # Process in background - for now, just mark as ready
-    # In production, this would trigger async processing
+    # Process the source: generate summary, chunk, and create embeddings
     try:
-        # For text files, extract content and generate summary
+        # For text files, extract content and generate summary + embeddings
         if source_type == "txt":
             text_content = content.decode("utf-8", errors="ignore")
+            
+            # Generate summary
             summary_result = await gemini_service.generate_summary(text_content[:50000])
 
             import json
@@ -107,10 +109,18 @@ async def upload_source(
             except:
                 source_guide = {"summary": summary_result["content"]}
 
+            # Process with RAG: chunk and generate embeddings
+            chunk_count = await rag_service.process_source(
+                source_id=source["id"],
+                content=text_content,
+                supabase_client=supabase
+            )
+
             supabase.table("sources").update({
                 "status": "ready",
                 "source_guide": source_guide,
                 "token_count": summary_result["usage"]["input_tokens"],
+                "metadata": {"chunk_count": chunk_count}
             }).eq("id", source["id"]).execute()
         else:
             # For PDFs, mark as ready (would need PDF parsing in production)
@@ -240,7 +250,7 @@ async def add_text_source(
 
     source = result.data[0]
 
-    # Generate summary
+    # Generate summary and process with RAG
     try:
         summary_result = await gemini_service.generate_summary(text_source.content[:50000])
 
@@ -250,10 +260,18 @@ async def add_text_source(
         except:
             source_guide = {"summary": summary_result["content"]}
 
+        # Process with RAG: chunk and generate embeddings
+        chunk_count = await rag_service.process_source(
+            source_id=source["id"],
+            content=text_source.content,
+            supabase_client=supabase
+        )
+
         supabase.table("sources").update({
             "status": "ready",
             "source_guide": source_guide,
             "token_count": summary_result["usage"]["input_tokens"],
+            "metadata": {"content": text_source.content[:100000], "chunk_count": chunk_count}
         }).eq("id", source["id"]).execute()
 
     except Exception as e:

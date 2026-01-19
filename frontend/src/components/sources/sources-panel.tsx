@@ -257,11 +257,10 @@ export function SourcesPanel({
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ delay: index * 0.05 }}
-                    className={`group relative flex cursor-pointer items-center gap-3 rounded-xl px-3 py-3 transition-all duration-150 ${
-                      selectedSources.has(source.id)
-                        ? 'bg-[var(--accent-primary)]/10 ring-1 ring-[var(--accent-primary)]/30'
-                        : 'hover:bg-[var(--bg-tertiary)]'
-                    } `}
+                    className={`group relative flex cursor-pointer items-center gap-2 rounded-xl px-3 py-3 transition-all duration-150 overflow-hidden ${selectedSources.has(source.id)
+                      ? 'bg-[var(--accent-primary)]/10 ring-1 ring-[var(--accent-primary)]/30'
+                      : 'hover:bg-[var(--bg-tertiary)]'
+                      } `}
                     onClick={() => onToggleSource(source.id)}
                   >
                     <Checkbox
@@ -273,8 +272,8 @@ export function SourcesPanel({
                       {getSourceIcon(source.type)}
                     </div>
 
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-[var(--text-primary)]">
+                    <div className="min-w-0 flex-1 overflow-hidden">
+                      <p className="truncate max-w-[120px] text-sm font-medium text-[var(--text-primary)]" title={source.name}>
                         {source.name}
                       </p>
                       <div className="mt-0.5 flex items-center gap-2">
@@ -398,11 +397,10 @@ export function SourcesPanel({
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 disabled={isAdding}
-                className={`flex h-32 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-                  isDragging
-                    ? 'border-[var(--accent-primary)] bg-[var(--accent-primary)]/10'
-                    : 'border-[rgba(255,255,255,0.15)] hover:border-[var(--accent-primary)]/50 hover:bg-[var(--bg-tertiary)]/50'
-                }`}
+                className={`flex h-32 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${isDragging
+                  ? 'border-[var(--accent-primary)] bg-[var(--accent-primary)]/10'
+                  : 'border-[rgba(255,255,255,0.15)] hover:border-[var(--accent-primary)]/50 hover:bg-[var(--bg-tertiary)]/50'
+                  }`}
               >
                 {isAdding ? (
                   <Loader2 className="h-6 w-6 animate-spin text-[var(--text-tertiary)]" />

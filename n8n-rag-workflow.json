@@ -1,0 +1,223 @@
+{
+    "name": "NotebookLM RAG - Process Source",
+    "nodes": [
+        {
+            "parameters": {},
+            "id": "trigger-1",
+            "name": "Start",
+            "type": "n8n-nodes-base.manualTrigger",
+            "typeVersion": 1,
+            "position": [
+                0,
+                0
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT id, name, type, metadata FROM sources WHERE status = 'ready' AND id NOT IN (SELECT DISTINCT source_id FROM source_chunks)"
+            },
+            "id": "supabase-get-unprocessed",
+            "name": "Get Unprocessed Sources",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                200,
+                0
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+                    "name": "Supabase"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "batchSize": 1,
+                "options": {}
+            },
+            "id": "split-batch",
+            "name": "Split Into Batches",
+            "type": "n8n-nodes-base.splitInBatches",
+            "typeVersion": 2,
+            "position": [
+                400,
+                0
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Get the source data\nconst source = $input.first().json;\nconst sourceId = source.id;\nconst metadata = source.metadata || {};\nconst content = metadata.content || '';\n\nif (!content) {\n  return [];\n}\n\n// Chunking parameters\nconst CHUNK_SIZE = 1000;\nconst CHUNK_OVERLAP = 200;\n\n// Split text into chunks\nfunction splitIntoChunks(text, chunkSize, overlap) {\n  const chunks = [];\n  let start = 0;\n  let chunkIndex = 0;\n  \n  while (start < text.length) {\n    const end = Math.min(start + chunkSize, text.length);\n    const chunk = text.slice(start, end).trim();\n    \n    if (chunk.length > 0) {\n      chunks.push({\n        source_id: sourceId,\n        chunk_index: chunkIndex,\n        content: chunk,\n        token_count: Math.ceil(chunk.length / 4),\n        metadata: {}\n      });\n      chunkIndex++;\n    }\n    \n    start += chunkSize - overlap;\n  }\n  \n  return chunks;\n}\n\nconst chunks = splitIntoChunks(content, CHUNK_SIZE, CHUNK_OVERLAP);\n\nreturn chunks.map(chunk => ({ json: chunk }));"
+            },
+            "id": "chunk-text",
+            "name": "Chunk Text",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                600,
+                0
+            ]
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "httpQueryAuth",
+                "sendQuery": true,
+                "queryParameters": {
+                    "parameters": [
+                        {
+                            "name": "key",
+                            "value": "={{ $credentials.geminiApiKey }}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "model",
+                            "value": "models/text-embedding-004"
+                        },
+                        {
+                            "name": "content",
+                            "value": "={\"parts\":[{\"text\":\"{{ $json.content }}\"}]}"
+                        },
+                        {
+                            "name": "taskType",
+                            "value": "RETRIEVAL_DOCUMENT"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "id": "generate-embedding",
+            "name": "Generate Embedding",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4,
+            "position": [
+                800,
+                0
+            ],
+            "credentials": {
+                "geminiApiKey": {
+                    "id": "YOUR_GEMINI_CREDENTIAL_ID",
+                    "name": "Gemini API"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Combine chunk data with embedding\nconst chunk = $('Chunk Text').item.json;\nconst embeddingResponse = $input.first().json;\n\nconst embedding = embeddingResponse.embedding?.values || [];\n\nreturn [{\n  json: {\n    source_id: chunk.source_id,\n    chunk_index: chunk.chunk_index,\n    content: chunk.content,\n    embedding: embedding,\n    token_count: chunk.token_count,\n    metadata: chunk.metadata\n  }\n}];"
+            },
+            "id": "combine-data",
+            "name": "Combine Chunk + Embedding",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1000,
+                0
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "upsert",
+                "tableId": "source_chunks",
+                "dataToSend": "autoMapInputData"
+            },
+            "id": "supabase-insert",
+            "name": "Insert to source_chunks",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                1200,
+                0
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+                    "name": "Supabase"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Start": {
+            "main": [
+                [
+                    {
+                        "node": "Get Unprocessed Sources",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Unprocessed Sources": {
+            "main": [
+                [
+                    {
+                        "node": "Split Into Batches",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Split Into Batches": {
+            "main": [
+                [
+                    {
+                        "node": "Chunk Text",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Split Into Batches",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Chunk Text": {
+            "main": [
+                [
+                    {
+                        "node": "Generate Embedding",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Generate Embedding": {
+            "main": [
+                [
+                    {
+                        "node": "Combine Chunk + Embedding",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Combine Chunk + Embedding": {
+            "main": [
+                [
+                    {
+                        "node": "Insert to source_chunks",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {},
+    "staticData": null
+}
