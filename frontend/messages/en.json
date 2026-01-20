@@ -1,0 +1,129 @@
+{
+    "common": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "close": "Close",
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Success",
+        "confirm": "Confirm",
+        "back": "Back",
+        "next": "Next",
+        "generate": "Generate",
+        "regenerate": "Regenerate"
+    },
+    "auth": {
+        "login": "Login",
+        "logout": "Logout",
+        "register": "Register",
+        "email": "Email",
+        "password": "Password",
+        "forgotPassword": "Forgot password?",
+        "noAccount": "Don't have an account?",
+        "hasAccount": "Already have an account?"
+    },
+    "dashboard": {
+        "title": "Your Notebooks",
+        "createNew": "Create New",
+        "empty": "No notebooks yet",
+        "emptyDescription": "Create your first notebook to get started",
+        "recentlyUpdated": "Recently Updated"
+    },
+    "notebook": {
+        "untitled": "Untitled Notebook",
+        "settings": "Settings",
+        "delete": "Delete Notebook",
+        "deleteConfirm": "Are you sure you want to delete this notebook?"
+    },
+    "sources": {
+        "title": "Sources",
+        "add": "Add Source",
+        "addText": "Add Text",
+        "addUrl": "Add URL",
+        "addYoutube": "Add YouTube",
+        "addFile": "Add File",
+        "empty": "No sources added",
+        "emptyDescription": "Add sources to start analyzing content",
+        "selected": "selected",
+        "selectAll": "Select all",
+        "processing": "Processing...",
+        "ready": "Ready",
+        "failed": "Failed",
+        "deleteConfirm": "Are you sure you want to delete this source?"
+    },
+    "chat": {
+        "title": "Chat",
+        "placeholder": "Ask a question about your sources...",
+        "send": "Send",
+        "noSources": "No sources selected",
+        "noSourcesDescription": "Select sources to get contextual answers",
+        "suggestedQuestions": "Suggested Questions",
+        "newChat": "New Chat",
+        "history": "Chat History"
+    },
+    "studio": {
+        "title": "Studio",
+        "audioOverview": "Audio Overview",
+        "audioDescription": "Generate a podcast-style audio overview",
+        "videoOverview": "Video Overview",
+        "videoDescription": "Generate a video presentation",
+        "research": "Deep Research",
+        "researchDescription": "Conduct in-depth research on a topic",
+        "generating": "Generating...",
+        "formats": {
+            "deepDive": "Deep Dive",
+            "brief": "Brief Overview",
+            "critique": "Critical Analysis",
+            "debate": "Debate"
+        }
+    },
+    "study": {
+        "title": "Study Materials",
+        "flashcards": "Flashcards",
+        "flashcardsDescription": "Create flashcards for studying",
+        "quiz": "Quiz",
+        "quizDescription": "Test your knowledge",
+        "faq": "FAQ",
+        "faqDescription": "Frequently asked questions",
+        "studyGuide": "Study Guide",
+        "studyGuideDescription": "Comprehensive study guide",
+        "mindMap": "Mind Map",
+        "mindMapDescription": "Visual concept mapping",
+        "noMaterials": "No study materials generated yet"
+    },
+    "notes": {
+        "title": "Notes",
+        "new": "New Note",
+        "empty": "No notes yet",
+        "untitled": "Untitled Note",
+        "pin": "Pin",
+        "unpin": "Unpin"
+    },
+    "export": {
+        "title": "Export",
+        "exportAs": "Export as",
+        "formats": {
+            "pdf": "PDF Document",
+            "docx": "Word Document",
+            "markdown": "Markdown"
+        }
+    },
+    "settings": {
+        "title": "Settings",
+        "language": "Language",
+        "languageDescription": "Choose the interface and content language",
+        "theme": "Theme",
+        "themeDescription": "Choose light or dark mode",
+        "themes": {
+            "light": "Light",
+            "dark": "Dark",
+            "system": "System"
+        }
+    },
+    "language": {
+        "en": "English",
+        "pl": "Polish"
+    }
+}

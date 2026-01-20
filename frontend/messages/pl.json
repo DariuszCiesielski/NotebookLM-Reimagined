@@ -1,0 +1,129 @@
+{
+    "common": {
+        "save": "Zapisz",
+        "cancel": "Anuluj",
+        "delete": "Usuń",
+        "edit": "Edytuj",
+        "close": "Zamknij",
+        "loading": "Ładowanie...",
+        "error": "Błąd",
+        "success": "Sukces",
+        "confirm": "Potwierdź",
+        "back": "Wstecz",
+        "next": "Dalej",
+        "generate": "Generuj",
+        "regenerate": "Generuj ponownie"
+    },
+    "auth": {
+        "login": "Zaloguj się",
+        "logout": "Wyloguj",
+        "register": "Zarejestruj się",
+        "email": "E-mail",
+        "password": "Hasło",
+        "forgotPassword": "Zapomniałeś hasła?",
+        "noAccount": "Nie masz konta?",
+        "hasAccount": "Masz już konto?"
+    },
+    "dashboard": {
+        "title": "Twoje notatniki",
+        "createNew": "Utwórz nowy",
+        "empty": "Brak notatników",
+        "emptyDescription": "Utwórz pierwszy notatnik, aby rozpocząć",
+        "recentlyUpdated": "Ostatnio aktualizowane"
+    },
+    "notebook": {
+        "untitled": "Notatnik bez tytułu",
+        "settings": "Ustawienia",
+        "delete": "Usuń notatnik",
+        "deleteConfirm": "Czy na pewno chcesz usunąć ten notatnik?"
+    },
+    "sources": {
+        "title": "Źródła",
+        "add": "Dodaj źródło",
+        "addText": "Dodaj tekst",
+        "addUrl": "Dodaj URL",
+        "addYoutube": "Dodaj YouTube",
+        "addFile": "Dodaj plik",
+        "empty": "Brak dodanych źródeł",
+        "emptyDescription": "Dodaj źródła, aby rozpocząć analizę treści",
+        "selected": "wybrano",
+        "selectAll": "Zaznacz wszystko",
+        "processing": "Przetwarzanie...",
+        "ready": "Gotowe",
+        "failed": "Błąd",
+        "deleteConfirm": "Czy na pewno chcesz usunąć to źródło?"
+    },
+    "chat": {
+        "title": "Czat",
+        "placeholder": "Zadaj pytanie o swoje źródła...",
+        "send": "Wyślij",
+        "noSources": "Brak wybranych źródeł",
+        "noSourcesDescription": "Wybierz źródła, aby uzyskać kontekstowe odpowiedzi",
+        "suggestedQuestions": "Sugerowane pytania",
+        "newChat": "Nowy czat",
+        "history": "Historia czatu"
+    },
+    "studio": {
+        "title": "Studio",
+        "audioOverview": "Przegląd audio",
+        "audioDescription": "Wygeneruj przegląd audio w stylu podcastu",
+        "videoOverview": "Przegląd wideo",
+        "videoDescription": "Wygeneruj prezentację wideo",
+        "research": "Głębokie badanie",
+        "researchDescription": "Przeprowadź dogłębne badanie tematu",
+        "generating": "Generowanie...",
+        "formats": {
+            "deepDive": "Dogłębna analiza",
+            "brief": "Krótki przegląd",
+            "critique": "Analiza krytyczna",
+            "debate": "Debata"
+        }
+    },
+    "study": {
+        "title": "Materiały do nauki",
+        "flashcards": "Fiszki",
+        "flashcardsDescription": "Stwórz fiszki do nauki",
+        "quiz": "Quiz",
+        "quizDescription": "Sprawdź swoją wiedzę",
+        "faq": "FAQ",
+        "faqDescription": "Często zadawane pytania",
+        "studyGuide": "Przewodnik",
+        "studyGuideDescription": "Kompleksowy przewodnik do nauki",
+        "mindMap": "Mapa myśli",
+        "mindMapDescription": "Wizualna mapa koncepcji",
+        "noMaterials": "Brak wygenerowanych materiałów"
+    },
+    "notes": {
+        "title": "Notatki",
+        "new": "Nowa notatka",
+        "empty": "Brak notatek",
+        "untitled": "Notatka bez tytułu",
+        "pin": "Przypnij",
+        "unpin": "Odepnij"
+    },
+    "export": {
+        "title": "Eksport",
+        "exportAs": "Eksportuj jako",
+        "formats": {
+            "pdf": "Dokument PDF",
+            "docx": "Dokument Word",
+            "markdown": "Markdown"
+        }
+    },
+    "settings": {
+        "title": "Ustawienia",
+        "language": "Język",
+        "languageDescription": "Wybierz język interfejsu i treści",
+        "theme": "Motyw",
+        "themeDescription": "Wybierz tryb jasny lub ciemny",
+        "themes": {
+            "light": "Jasny",
+            "dark": "Ciemny",
+            "system": "Systemowy"
+        }
+    },
+    "language": {
+        "en": "Angielski",
+        "pl": "Polski"
+    }
+}

@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { ThemeSelector } from '@/components/ui/theme-selector';
+import { LanguageSelector } from '@/components/ui/language-selector';
 import { createClient } from '@/lib/supabase';
 
 interface Profile {
@@ -210,6 +211,9 @@ export function DashboardHeader({
 
       {/* Right side */}
       <div className="flex items-center gap-2">
+        {/* Language Selector */}
+        <LanguageSelector />
+
         {/* Theme Selector */}
         <ThemeSelector />
 
