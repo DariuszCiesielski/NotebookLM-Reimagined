@@ -147,7 +147,7 @@ export const notebooksApi = {
     notebookId: string,
     settings: Record<string, unknown>
   ): Promise<ApiResponse<unknown>> {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}`, {
+    return fetchWithAuth(`/api/notebooks/${notebookId}`, {
       method: 'PATCH',
       body: JSON.stringify({ settings }),
     });
@@ -157,18 +157,18 @@ export const notebooksApi = {
 // Chat API
 export const chatApi = {
   async sendMessage(notebookId: string, request: ChatRequest): Promise<ApiResponse<ChatResponse>> {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/chat`, {
+    return fetchWithAuth(`/api/notebooks/${notebookId}/chat`, {
       method: 'POST',
       body: JSON.stringify(request),
     });
   },
 
   async getSessions(notebookId: string) {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/chat/sessions`);
+    return fetchWithAuth(`/api/notebooks/${notebookId}/chat/sessions`);
   },
 
   async getSession(notebookId: string, sessionId: string) {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/chat/sessions/${sessionId}`);
+    return fetchWithAuth(`/api/notebooks/${notebookId}/chat/sessions/${sessionId}`);
   },
 };
 
@@ -179,7 +179,7 @@ export const studyApi = {
     sourceIds?: string[],
     count = 10
   ): Promise<ApiResponse<{ flashcards: Flashcard[] }>> {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/flashcards`, {
+    return fetchWithAuth(`/api/notebooks/${notebookId}/flashcards`, {
       method: 'POST',
       body: JSON.stringify({ source_ids: sourceIds, count }),
     });
@@ -190,7 +190,7 @@ export const studyApi = {
     sourceIds?: string[],
     questionCount = 10
   ): Promise<ApiResponse<{ questions: QuizQuestion[] }>> {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/quiz`, {
+    return fetchWithAuth(`/api/notebooks/${notebookId}/quiz`, {
       method: 'POST',
       body: JSON.stringify({ source_ids: sourceIds, question_count: questionCount }),
     });
@@ -200,7 +200,7 @@ export const studyApi = {
     notebookId: string,
     sourceIds?: string[]
   ): Promise<ApiResponse<StudyGuide>> {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/study-guide`, {
+    return fetchWithAuth(`/api/notebooks/${notebookId}/study-guide`, {
       method: 'POST',
       body: JSON.stringify({ source_ids: sourceIds }),
     });
@@ -211,7 +211,7 @@ export const studyApi = {
     sourceIds?: string[],
     count = 10
   ): Promise<ApiResponse<{ faqs: FAQ[] }>> {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/faq`, {
+    return fetchWithAuth(`/api/notebooks/${notebookId}/faq`, {
       method: 'POST',
       body: JSON.stringify({ source_ids: sourceIds, count }),
     });
@@ -221,7 +221,7 @@ export const studyApi = {
 // Audio API
 export const audioApi = {
   async estimate(notebookId: string, format: string, sourceIds?: string[]) {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/audio/estimate`, {
+    return fetchWithAuth(`/api/notebooks/${notebookId}/audio/estimate`, {
       method: 'POST',
       body: JSON.stringify({ format, source_ids: sourceIds }),
     });
@@ -233,7 +233,7 @@ export const audioApi = {
     sourceIds?: string[],
     customInstructions?: string
   ): Promise<ApiResponse<AudioOverview>> {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/audio`, {
+    return fetchWithAuth(`/api/notebooks/${notebookId}/audio`, {
       method: 'POST',
       body: JSON.stringify({
         format,
@@ -244,15 +244,15 @@ export const audioApi = {
   },
 
   async list(notebookId: string): Promise<ApiResponse<AudioOverview[]>> {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/audio`);
+    return fetchWithAuth(`/api/notebooks/${notebookId}/audio`);
   },
 
   async get(notebookId: string, audioId: string): Promise<ApiResponse<AudioOverview>> {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/audio/${audioId}`);
+    return fetchWithAuth(`/api/notebooks/${notebookId}/audio/${audioId}`);
   },
 
   async delete(notebookId: string, audioId: string) {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/audio/${audioId}`, {
+    return fetchWithAuth(`/api/notebooks/${notebookId}/audio/${audioId}`, {
       method: 'DELETE',
     });
   },
@@ -266,18 +266,18 @@ export const notesApi = {
     content: string,
     tags?: string[]
   ): Promise<ApiResponse<Note>> {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/notes`, {
+    return fetchWithAuth(`/api/notebooks/${notebookId}/notes`, {
       method: 'POST',
       body: JSON.stringify({ title, content, tags }),
     });
   },
 
   async list(notebookId: string): Promise<ApiResponse<Note[]>> {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/notes`);
+    return fetchWithAuth(`/api/notebooks/${notebookId}/notes`);
   },
 
   async get(notebookId: string, noteId: string): Promise<ApiResponse<Note>> {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/notes/${noteId}`);
+    return fetchWithAuth(`/api/notebooks/${notebookId}/notes/${noteId}`);
   },
 
   async update(
@@ -285,20 +285,20 @@ export const notesApi = {
     noteId: string,
     data: Partial<Note>
   ): Promise<ApiResponse<Note>> {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/notes/${noteId}`, {
+    return fetchWithAuth(`/api/notebooks/${notebookId}/notes/${noteId}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
     });
   },
 
   async delete(notebookId: string, noteId: string) {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/notes/${noteId}`, {
+    return fetchWithAuth(`/api/notebooks/${notebookId}/notes/${noteId}`, {
       method: 'DELETE',
     });
   },
 
   async saveResponse(notebookId: string, messageId: string): Promise<ApiResponse<Note>> {
-    return fetchWithAuth(`/api/v1/notebooks/${notebookId}/notes/save-response`, {
+    return fetchWithAuth(`/api/notebooks/${notebookId}/notes/save-response`, {
       method: 'POST',
       body: JSON.stringify({ message_id: messageId }),
     });
