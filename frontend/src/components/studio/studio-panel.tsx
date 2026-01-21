@@ -36,6 +36,7 @@ import {
 } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -219,6 +220,7 @@ export function StudioPanel({
     includeNotes: true,
     includeGenerated: true,
   });
+  const t = useTranslations('studio');
 
   // Open config dialog for a specific type
   const openConfigDialog = (type: GenerationType) => {
@@ -302,8 +304,8 @@ export function StudioPanel({
         {/* Audio Overview Section */}
         <StudioSection
           id="audio"
-          title="Audio Overview"
-          subtitle="Podcast-style discussion"
+          title={t('audioOverview')}
+          subtitle={t('audioDescription')}
           icon={<Microphone className="h-5 w-5" weight="duotone" />}
           iconGradient="from-orange-500/20 to-red-500/20"
           iconColor="text-orange-500"
@@ -312,25 +314,25 @@ export function StudioPanel({
         >
           <div className="space-y-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[var(--text-primary)]">Format</label>
+              <label className="text-xs font-medium text-[var(--text-primary)]">{t('format')}</label>
               <Select value={audioFormat} onValueChange={onAudioFormatChange}>
                 <SelectTrigger className="h-9 rounded-lg border-[rgba(255,255,255,0.1)] bg-[var(--bg-tertiary)] text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="border-[rgba(255,255,255,0.1)] bg-[var(--bg-secondary)]">
-                  <SelectItem value="deep_dive">Deep Dive (10-15 min)</SelectItem>
-                  <SelectItem value="brief">Brief Summary (2-3 min)</SelectItem>
-                  <SelectItem value="critique">Analytical (5-10 min)</SelectItem>
-                  <SelectItem value="debate">Debate (8-15 min)</SelectItem>
+                  <SelectItem value="deep_dive">{t('formats.deepDive')}</SelectItem>
+                  <SelectItem value="brief">{t('formats.brief')}</SelectItem>
+                  <SelectItem value="critique">{t('formats.critique')}</SelectItem>
+                  <SelectItem value="debate">{t('formats.debate')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-[var(--text-primary)]">
-                Custom Instructions
+                {t('customInstructions')}
               </label>
               <Textarea
-                placeholder="Optional instructions for hosts..."
+                placeholder={t('instructionsPlaceholder')}
                 value={audioInstructions}
                 onChange={(e) => onAudioInstructionsChange(e.target.value)}
                 rows={2}
@@ -348,7 +350,7 @@ export function StudioPanel({
                 ) : (
                   <Play className="mr-2 h-4 w-4" />
                 )}
-                Generate
+                {t('generate')}
               </Button>
               {hasGeneratedAudio && onOpenAudio && (
                 <Button
@@ -356,14 +358,14 @@ export function StudioPanel({
                   className="rounded-lg border-orange-500/30 text-orange-500 hover:bg-orange-500/10"
                   onClick={onOpenAudio}
                 >
-                  View
+                  {t('view')}
                   <CaretRight className="ml-1 h-4 w-4" weight="bold" />
                 </Button>
               )}
             </div>
             {selectedSourcesCount === 0 && (
               <p className="text-center text-xs text-[var(--text-tertiary)]">
-                Select sources to generate
+                {t('selectSourcesToGenerate')}
               </p>
             )}
           </div>
@@ -372,8 +374,8 @@ export function StudioPanel({
         {/* Video Overview Section */}
         <StudioSection
           id="video"
-          title="Video Overview"
-          subtitle="AI-generated video clip"
+          title={t('videoOverview')}
+          subtitle={t('videoDescription')}
           icon={<VideoCamera className="h-5 w-5" weight="duotone" />}
           iconGradient="from-purple-500/20 to-pink-500/20"
           iconColor="text-purple-500"
@@ -382,20 +384,20 @@ export function StudioPanel({
         >
           <div className="space-y-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[var(--text-primary)]">Style</label>
+              <label className="text-xs font-medium text-[var(--text-primary)]">{t('style')}</label>
               <Select value={videoStyle} onValueChange={onVideoStyleChange}>
                 <SelectTrigger className="h-9 rounded-lg border-[rgba(255,255,255,0.1)] bg-[var(--bg-tertiary)] text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="border-[rgba(255,255,255,0.1)] bg-[var(--bg-secondary)]">
-                  <SelectItem value="explainer">Explainer (5s)</SelectItem>
-                  <SelectItem value="documentary">Documentary (10s)</SelectItem>
-                  <SelectItem value="presentation">Presentation (5s)</SelectItem>
+                  <SelectItem value="explainer">{t('formats.explainer')}</SelectItem>
+                  <SelectItem value="documentary">{t('formats.documentary')}</SelectItem>
+                  <SelectItem value="presentation">{t('formats.presentation')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <p className="text-xs text-[var(--text-tertiary)]">
-              Generates an AI video clip using Wan 2.5. Estimated cost: ~$0.10-0.20
+              {t('videoCost')}
             </p>
             <div className="flex gap-2">
               <Button
@@ -408,7 +410,7 @@ export function StudioPanel({
                 ) : (
                   <VideoCamera className="mr-2 h-4 w-4" weight="duotone" />
                 )}
-                {generatingVideo ? 'Generating...' : 'Generate Video'}
+                {generatingVideo ? t('generating') : t('generateVideo')}
               </Button>
               {hasGeneratedVideo && onOpenVideo && (
                 <Button
@@ -416,14 +418,14 @@ export function StudioPanel({
                   className="rounded-lg border-purple-500/30 text-purple-500 hover:bg-purple-500/10"
                   onClick={onOpenVideo}
                 >
-                  View
+                  {t('view')}
                   <CaretRight className="ml-1 h-4 w-4" weight="bold" />
                 </Button>
               )}
             </div>
             {selectedSourcesCount === 0 && (
               <p className="text-center text-xs text-[var(--text-tertiary)]">
-                Select sources to generate
+                {t('selectSourcesToGenerate')}
               </p>
             )}
           </div>
@@ -432,8 +434,8 @@ export function StudioPanel({
         {/* Deep Research Section */}
         <StudioSection
           id="research"
-          title="Deep Research"
-          subtitle="Autonomous web research"
+          title={t('research')}
+          subtitle={t('researchDescription')}
           icon={<MagnifyingGlass className="h-5 w-5" weight="duotone" />}
           iconGradient="from-blue-500/20 to-cyan-500/20"
           iconColor="text-blue-500"
@@ -443,24 +445,24 @@ export function StudioPanel({
           <div className="space-y-3">
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-[var(--text-primary)]">
-                Research Query
+                {t('researchQuery')}
               </label>
               <Input
-                placeholder="What would you like to research?"
+                placeholder={t('researchPlaceholder')}
                 value={researchQuery}
                 onChange={(e) => onResearchQueryChange(e.target.value)}
                 className="h-9 rounded-lg border-[rgba(255,255,255,0.1)] bg-[var(--bg-tertiary)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--accent-primary)]"
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[var(--text-primary)]">Mode</label>
+              <label className="text-xs font-medium text-[var(--text-primary)]">{t('mode')}</label>
               <Select value={researchMode} onValueChange={onResearchModeChange}>
                 <SelectTrigger className="h-9 rounded-lg border-[rgba(255,255,255,0.1)] bg-[var(--bg-tertiary)] text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="border-[rgba(255,255,255,0.1)] bg-[var(--bg-secondary)]">
-                  <SelectItem value="fast">Fast (3-5 min)</SelectItem>
-                  <SelectItem value="deep">Deep (10-15 min)</SelectItem>
+                  <SelectItem value="fast">{t('formats.fastMode')}</SelectItem>
+                  <SelectItem value="deep">{t('formats.deepMode')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -475,7 +477,7 @@ export function StudioPanel({
                 ) : (
                   <MagnifyingGlass className="mr-2 h-4 w-4" weight="duotone" />
                 )}
-                Research
+                {t('research')}
               </Button>
               {hasGeneratedResearch && onOpenResearch && (
                 <Button
@@ -483,7 +485,7 @@ export function StudioPanel({
                   className="rounded-lg border-blue-500/30 text-blue-500 hover:bg-blue-500/10"
                   onClick={onOpenResearch}
                 >
-                  View
+                  {t('view')}
                   <CaretRight className="ml-1 h-4 w-4" weight="bold" />
                 </Button>
               )}
@@ -494,8 +496,8 @@ export function StudioPanel({
         {/* Study Materials Section */}
         <StudioSection
           id="study"
-          title="Study Materials"
-          subtitle="Flashcards, quizzes, and more"
+          title={t('studyMaterials')}
+          subtitle={t('studyMaterialsDescription')}
           icon={<GraduationCap className="h-5 w-5" />}
           iconGradient="from-emerald-500/20 to-teal-500/20"
           iconColor="text-emerald-500"
@@ -653,8 +655,8 @@ export function StudioPanel({
         {/* Creative Outputs Section */}
         <StudioSection
           id="creative"
-          title="Creative Outputs"
-          subtitle="Tables, reports, slides, infographics"
+          title={t('creativeOutputs')}
+          subtitle={t('creativeOutputsDescription')}
           icon={<Palette className="h-5 w-5" />}
           iconGradient="from-pink-500/20 to-rose-500/20"
           iconColor="text-pink-500"
@@ -770,8 +772,8 @@ export function StudioPanel({
         {/* Notes Section */}
         <StudioSection
           id="notes"
-          title="Notes"
-          subtitle={`${notesCount} saved`}
+          title={t('notes')}
+          subtitle={`${notesCount} ${t('saved')}`}
           icon={<Note className="h-5 w-5" weight="duotone" />}
           iconGradient="from-amber-500/20 to-yellow-500/20"
           iconColor="text-amber-500"
@@ -820,8 +822,8 @@ export function StudioPanel({
         {/* Export Section */}
         <StudioSection
           id="export"
-          title="Export Notebook"
-          subtitle="Download all content"
+          title={t('exportNotebook')}
+          subtitle={t('downloadAllContent')}
           icon={<Export className="h-5 w-5" weight="duotone" />}
           iconGradient="from-sky-500/20 to-indigo-500/20"
           iconColor="text-sky-500"
@@ -1080,11 +1082,10 @@ function ExportOptionToggle({
   return (
     <button
       onClick={() => onChange(!checked)}
-      className={`flex items-center gap-2 rounded-lg border px-3 py-2 transition-colors ${
-        checked
-          ? 'border-sky-500/50 bg-sky-500/10 text-[var(--text-primary)]'
-          : 'border-[rgba(255,255,255,0.1)] text-[var(--text-tertiary)] hover:bg-[var(--bg-tertiary)]'
-      }`}
+      className={`flex items-center gap-2 rounded-lg border px-3 py-2 transition-colors ${checked
+        ? 'border-sky-500/50 bg-sky-500/10 text-[var(--text-primary)]'
+        : 'border-[rgba(255,255,255,0.1)] text-[var(--text-tertiary)] hover:bg-[var(--bg-tertiary)]'
+        }`}
     >
       <CheckSquare
         className={`h-4 w-4 ${checked ? 'text-sky-500' : 'text-[var(--text-tertiary)]'}`}

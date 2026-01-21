@@ -345,6 +345,7 @@ Every response includes cost transparency:
 - **Global Search** — Query across all notebooks
 - **Chat Threads** — Multiple conversations per notebook
 - **AI Personas** — Critical Reviewer, Simple Explainer, Technical Expert, Socratic Teacher, or custom
+- **Internationalization (i18n)** — Full support for English and Polish languages with auto-detection
 
 ### Content Generation
 - **Audio Overviews** — Podcast-style with multiple hosts (Deep Dive, Brief, Debate)

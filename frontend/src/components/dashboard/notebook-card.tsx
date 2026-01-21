@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { MoreHorizontal, Trash2, Edit2, Copy, Star } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -49,6 +50,7 @@ export function NotebookCard({
   onRename,
   onToggleFeatured,
 }: NotebookCardProps) {
+  const t = useTranslations();
   const CardContent = () => (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -66,11 +68,11 @@ export function NotebookCard({
             <h3 className="truncate text-base font-semibold text-[var(--text-primary)]">{name}</h3>
             <div className="mt-0.5 flex items-center gap-2">
               <span className="text-sm text-[var(--text-tertiary)]">
-                {sourceCount} source{sourceCount !== 1 ? 's' : ''}
+                {sourceCount} {sourceCount === 1 ? t('notebook.source') : t('notebook.sources')}
               </span>
               {isFeatured && (
                 <Badge className="h-5 border-0 bg-[var(--accent-primary)]/20 py-0 text-xs text-[var(--accent-primary)]">
-                  Featured
+                  {t('notebook.featured')}
                 </Badge>
               )}
             </div>
@@ -100,7 +102,7 @@ export function NotebookCard({
                 className="cursor-pointer"
               >
                 <Edit2 className="mr-2 h-4 w-4" />
-                Rename
+                {t('common.rename')}
               </DropdownMenuItem>
             )}
             {onDuplicate && (
@@ -112,7 +114,7 @@ export function NotebookCard({
                 className="cursor-pointer"
               >
                 <Copy className="mr-2 h-4 w-4" />
-                Duplicate
+                {t('common.duplicate')}
               </DropdownMenuItem>
             )}
             {onToggleFeatured && (
@@ -126,7 +128,7 @@ export function NotebookCard({
                 <Star
                   className={`mr-2 h-4 w-4 ${isFeatured ? 'fill-[var(--accent-primary)] text-[var(--accent-primary)]' : ''}`}
                 />
-                {isFeatured ? 'Remove from Featured' : 'Add to Featured'}
+                {isFeatured ? t('notebook.removeFromFeatured') : t('notebook.addToFeatured')}
               </DropdownMenuItem>
             )}
             <DropdownMenuSeparator className="bg-[rgba(255,255,255,0.1)]" />
@@ -138,7 +140,7 @@ export function NotebookCard({
               className="cursor-pointer text-[var(--error)] focus:text-[var(--error)]"
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              Delete
+              {t('common.delete')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -151,7 +153,7 @@ export function NotebookCard({
 
       {/* Footer */}
       <div className="flex items-center justify-between text-xs text-[var(--text-tertiary)]">
-        <span>{lastEdited ? `Edited ${lastEdited}` : 'Never edited'}</span>
+        <span>{lastEdited ? `${t('notebook.edited')} ${lastEdited}` : t('notebook.neverEdited')}</span>
       </div>
     </motion.div>
   );
@@ -163,18 +165,18 @@ export function NotebookCard({
       </ContextMenuTrigger>
       <ContextMenuContent className="w-48 border-[rgba(255,255,255,0.1)] bg-[var(--bg-secondary)]">
         <ContextMenuItem onClick={() => onOpen(id)} className="cursor-pointer">
-          Open Notebook
+          {t('notebook.openNotebook')}
         </ContextMenuItem>
         {onRename && (
           <ContextMenuItem onClick={() => onRename(id)} className="cursor-pointer">
             <Edit2 className="mr-2 h-4 w-4" />
-            Rename
+            {t('common.rename')}
           </ContextMenuItem>
         )}
         {onDuplicate && (
           <ContextMenuItem onClick={() => onDuplicate(id)} className="cursor-pointer">
             <Copy className="mr-2 h-4 w-4" />
-            Duplicate
+            {t('common.duplicate')}
           </ContextMenuItem>
         )}
         {onToggleFeatured && (
@@ -182,7 +184,7 @@ export function NotebookCard({
             <Star
               className={`mr-2 h-4 w-4 ${isFeatured ? 'fill-[var(--accent-primary)] text-[var(--accent-primary)]' : ''}`}
             />
-            {isFeatured ? 'Remove from Featured' : 'Add to Featured'}
+            {isFeatured ? t('notebook.removeFromFeatured') : t('notebook.addToFeatured')}
           </ContextMenuItem>
         )}
         <ContextMenuSeparator className="bg-[rgba(255,255,255,0.1)]" />
@@ -191,7 +193,7 @@ export function NotebookCard({
           className="cursor-pointer text-[var(--error)] focus:text-[var(--error)]"
         >
           <Trash2 className="mr-2 h-4 w-4" />
-          Delete
+          {t('common.delete')}
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
@@ -199,6 +201,7 @@ export function NotebookCard({
 }
 
 export function CreateNotebookCard({ onClick }: { onClick: () => void }) {
+  const t = useTranslations();
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -209,8 +212,8 @@ export function CreateNotebookCard({ onClick }: { onClick: () => void }) {
       <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-[var(--bg-tertiary)]">
         <span className="text-3xl">+</span>
       </div>
-      <h3 className="text-base font-semibold text-[var(--text-primary)]">Create New</h3>
-      <p className="mt-1 text-sm text-[var(--text-tertiary)]">Start a new research notebook</p>
+      <h3 className="text-base font-semibold text-[var(--text-primary)]">{t('dashboard.createNew')}</h3>
+      <p className="mt-1 text-sm text-[var(--text-tertiary)]">{t('notebook.startNew')}</p>
     </motion.div>
   );
 }

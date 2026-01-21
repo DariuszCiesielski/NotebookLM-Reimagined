@@ -3,18 +3,7 @@
 import { motion } from 'framer-motion';
 import { Clock, Star, Archive } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-
-interface Tab {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-}
-
-const tabs: Tab[] = [
-  { id: 'recent', label: 'Recent', icon: <Clock className="h-4 w-4" /> },
-  { id: 'featured', label: 'Featured', icon: <Star className="h-4 w-4" /> },
-  { id: 'archived', label: 'Archived', icon: <Archive className="h-4 w-4" /> },
-];
+import { useTranslations } from 'next-intl';
 
 interface DashboardTabsProps {
   activeTab: string;
@@ -22,8 +11,15 @@ interface DashboardTabsProps {
 }
 
 export function DashboardTabs({ activeTab, onTabChange }: DashboardTabsProps) {
+  const t = useTranslations('dashboard');
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const tabRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+
+  const tabs = [
+    { id: 'recent', label: t('recent'), icon: <Clock className="h-4 w-4" /> },
+    { id: 'featured', label: t('featured'), icon: <Star className="h-4 w-4" /> },
+    { id: 'archived', label: t('archived'), icon: <Archive className="h-4 w-4" /> },
+  ];
 
   useEffect(() => {
     const activeTabElement = tabRefs.current.get(activeTab);
@@ -54,11 +50,10 @@ export function DashboardTabs({ activeTab, onTabChange }: DashboardTabsProps) {
             if (el) tabRefs.current.set(tab.id, el);
           }}
           onClick={() => onTabChange(tab.id)}
-          className={`relative z-10 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 ${
-            activeTab === tab.id
+          className={`relative z-10 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 ${activeTab === tab.id
               ? 'text-[var(--text-primary)]'
               : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-          } `}
+            } `}
         >
           {tab.icon}
           <span>{tab.label}</span>
@@ -67,3 +62,4 @@ export function DashboardTabs({ activeTab, onTabChange }: DashboardTabsProps) {
     </div>
   );
 }
+

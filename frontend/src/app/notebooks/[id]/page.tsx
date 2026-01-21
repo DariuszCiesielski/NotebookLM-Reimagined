@@ -37,6 +37,7 @@ import { User } from '@supabase/supabase-js';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 
 import { StudioPanel, ExportOptionsState } from '@/components/studio/studio-panel';
 import type { GenerationConfig } from '@/components/studio/generation-config-dialog';
@@ -115,6 +116,9 @@ export default function NotebookPage() {
   const searchParams = useSearchParams();
   const notebookId = params.id as string;
   const supabase = createClient();
+  const tSources = useTranslations('sources');
+  const tNotebook = useTranslations('notebook');
+  const tStudio = useTranslations('studio');
 
   // Core state - React Query for cached data
   const [user, setUser] = useState<User | null>(null);
@@ -1597,11 +1601,11 @@ export default function NotebookPage() {
 
         <div className="ml-auto flex items-center gap-2">
           <Badge className="border-0 bg-[var(--bg-tertiary)] text-xs text-[var(--text-secondary)]">
-            {sources.length} source{sources.length !== 1 ? 's' : ''}
+            {sources.length} {sources.length === 1 ? tSources('source') : tSources('sourcesPlural')}
           </Badge>
           {selectedSources.size > 0 && (
             <Badge className="border-0 bg-[var(--accent-primary)]/20 text-xs text-[var(--accent-primary)]">
-              {selectedSources.size} selected
+              {selectedSources.size} {tSources('selected')}
             </Badge>
           )}
           {notebookSettings?.persona?.enabled && (
@@ -1616,7 +1620,7 @@ export default function NotebookPage() {
             className="h-9 gap-2 rounded-lg px-3 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
           >
             <Settings className="h-4 w-4" />
-            <span className="hidden sm:inline">Settings</span>
+            <span className="hidden sm:inline">{tNotebook('settings')}</span>
           </Button>
           <Button
             variant="ghost"
@@ -1625,7 +1629,7 @@ export default function NotebookPage() {
             className="h-9 gap-2 rounded-lg px-3 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
           >
             <History className="h-4 w-4" />
-            <span className="hidden sm:inline">History</span>
+            <span className="hidden sm:inline">{tNotebook('history')}</span>
           </Button>
         </div>
       </motion.header>
@@ -1633,8 +1637,8 @@ export default function NotebookPage() {
       {/* Three Panel Layout */}
       <div className="flex-1 overflow-hidden">
         <ThreePanelLayout
-          leftPanelTitle="Sources"
-          rightPanelTitle="Studio"
+          leftPanelTitle={tSources('title')}
+          rightPanelTitle={tStudio('title')}
           leftPanel={
             <SourcesPanel
               sources={sources}

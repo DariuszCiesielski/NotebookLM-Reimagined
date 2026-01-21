@@ -26,6 +26,7 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -39,7 +40,7 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { createClient , ChatMessage, Citation } from '@/lib/supabase';
+import { createClient, ChatMessage, Citation } from '@/lib/supabase';
 
 interface ChatSession {
   id: string;
@@ -70,11 +71,12 @@ interface ChatPanelProps {
   notebookId?: string;
 }
 
-const SUGGESTED_QUESTIONS = [
-  'Summarize the key points',
-  'What are the main takeaways?',
-  'Explain the methodology',
-  'What are the limitations?',
+// Suggested questions will be fetched from translations
+const SUGGESTED_QUESTION_KEYS = [
+  'summarizeKeyPoints',
+  'mainTakeaways',
+  'explainMethodology',
+  'whatAreLimitations',
 ];
 
 export function ChatPanel({
@@ -98,6 +100,7 @@ export function ChatPanel({
 }: ChatPanelProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const t = useTranslations('chat');
 
   // Sidebar state
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -108,7 +111,7 @@ export function ChatPanel({
 
   // Get current session title
   const currentSession = sessions.find((s) => s.id === currentSessionId);
-  const currentTitle = currentSession?.title || 'New Chat';
+  const currentTitle = currentSession?.title || t('newChat');
 
   // Filter sessions based on search query
   const filteredSessions = sessions.filter((session) =>
@@ -124,10 +127,10 @@ export function ChatPanel({
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
 
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffMins < 1) return t('justNow');
+    if (diffMins < 60) return `${diffMins}${t('agoMinutes')}`;
+    if (diffHours < 24) return `${diffHours}${t('agoHours')}`;
+    if (diffDays < 7) return `${diffDays}${t('agoDays')}`;
     return date.toLocaleDateString();
   };
 
@@ -199,7 +202,7 @@ export function ChatPanel({
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard');
+    toast.success(t('copiedToClipboard'));
   };
 
   // Sidebar Thread Item Component
@@ -208,20 +211,18 @@ export function ChatPanel({
 
     return (
       <div
-        className={`group relative flex cursor-pointer items-start gap-3 rounded-xl p-3 transition-all ${
-          isActive
-            ? 'border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15'
-            : 'border border-transparent hover:bg-[var(--bg-tertiary)]'
-        } `}
+        className={`group relative flex cursor-pointer items-start gap-3 rounded-xl p-3 transition-all ${isActive
+          ? 'border border-[var(--accent-primary)]/30 bg-[var(--accent-primary)]/15'
+          : 'border border-transparent hover:bg-[var(--bg-tertiary)]'
+          } `}
         onClick={() => !isEditing && onLoadSession?.(session.id)}
         onDoubleClick={() => handleStartRename(session)}
       >
         <div
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-            isActive
-              ? 'bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]'
-              : 'bg-[var(--bg-secondary)] text-[var(--text-tertiary)]'
-          } `}
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${isActive
+            ? 'bg-[var(--accent-primary)]/20 text-[var(--accent-primary)]'
+            : 'bg-[var(--bg-secondary)] text-[var(--text-tertiary)]'
+            } `}
         >
           <MessageSquare className="h-4 w-4" />
         </div>
@@ -296,7 +297,7 @@ export function ChatPanel({
                   <Pencil className="h-3.5 w-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Rename</TooltipContent>
+              <TooltipContent>{t('rename')}</TooltipContent>
             </Tooltip>
 
             {onDeleteSession && !isActive && (
@@ -314,7 +315,7 @@ export function ChatPanel({
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Delete</TooltipContent>
+                <TooltipContent>{t('delete')}</TooltipContent>
               </Tooltip>
             )}
           </div>
@@ -344,7 +345,7 @@ export function ChatPanel({
               {/* Sidebar Header */}
               <div className="border-b border-[rgba(255,255,255,0.1)] p-4">
                 <div className="mb-3 flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-[var(--text-primary)]">Chat History</h3>
+                  <h3 className="text-sm font-semibold text-[var(--text-primary)]">{t('history')}</h3>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
@@ -356,7 +357,7 @@ export function ChatPanel({
                         <PanelLeftClose className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>Close sidebar</TooltipContent>
+                    <TooltipContent>{t('closeSidebar')}</TooltipContent>
                   </Tooltip>
                 </div>
 
@@ -364,7 +365,7 @@ export function ChatPanel({
                 <div className="relative">
                   <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)]" />
                   <Input
-                    placeholder="Search threads..."
+                    placeholder={t('searchThreads')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="h-9 border-[rgba(255,255,255,0.1)] bg-[var(--bg-secondary)] pl-9 text-sm placeholder:text-[var(--text-tertiary)]"
@@ -381,7 +382,7 @@ export function ChatPanel({
                     onClick={onNewChat}
                   >
                     <Plus className="h-4 w-4 text-[var(--accent-primary)]" />
-                    <span>New Chat</span>
+                    <span>{t('newChat')}</span>
                   </Button>
                 </div>
               )}
@@ -405,12 +406,12 @@ export function ChatPanel({
                 ) : searchQuery ? (
                   <div className="py-8 text-center">
                     <Search className="mx-auto mb-2 h-8 w-8 text-[var(--text-tertiary)]" />
-                    <p className="text-sm text-[var(--text-tertiary)]">No threads found</p>
+                    <p className="text-sm text-[var(--text-tertiary)]">{t('noThreadsFound')}</p>
                   </div>
                 ) : (
                   <div className="py-8 text-center">
                     <MessageSquare className="mx-auto mb-2 h-8 w-8 text-[var(--text-tertiary)]" />
-                    <p className="text-sm text-[var(--text-tertiary)]">No conversations yet</p>
+                    <p className="text-sm text-[var(--text-tertiary)]">{t('noConversationsYet')}</p>
                   </div>
                 )}
               </div>
@@ -436,7 +437,7 @@ export function ChatPanel({
                   <PanelLeft className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{sidebarOpen ? 'Close sidebar' : 'Open sidebar'}</TooltipContent>
+              <TooltipContent>{sidebarOpen ? t('closeSidebar') : t('openSidebar')}</TooltipContent>
             </Tooltip>
 
             {/* Dropdown (shown when sidebar is closed) */}
@@ -463,7 +464,7 @@ export function ChatPanel({
                         onClick={onNewChat}
                       >
                         <Plus className="h-4 w-4 text-[var(--accent-primary)]" />
-                        <span>New Chat</span>
+                        <span>{t('newChat')}</span>
                       </DropdownMenuItem>
                       {sessions.length > 0 && (
                         <DropdownMenuSeparator className="bg-[rgba(255,255,255,0.1)]" />
@@ -479,9 +480,8 @@ export function ChatPanel({
                       {sessions.map((session) => (
                         <DropdownMenuItem
                           key={session.id}
-                          className={`group cursor-pointer gap-2 focus:bg-[var(--bg-tertiary)] ${
-                            session.id === currentSessionId ? 'bg-[var(--accent-primary)]/10' : ''
-                          }`}
+                          className={`group cursor-pointer gap-2 focus:bg-[var(--bg-tertiary)] ${session.id === currentSessionId ? 'bg-[var(--accent-primary)]/10' : ''
+                            }`}
                           onClick={() => onLoadSession?.(session.id)}
                         >
                           <div className="min-w-0 flex-1">
@@ -516,7 +516,7 @@ export function ChatPanel({
                     </div>
                   ) : (
                     <div className="px-2 py-4 text-center text-sm text-[var(--text-tertiary)]">
-                      No previous conversations
+                      {t('noPreviousConversations')}
                     </div>
                   )}
                 </DropdownMenuContent>
@@ -536,7 +536,7 @@ export function ChatPanel({
                   <Plus className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>New Chat</TooltipContent>
+              <TooltipContent>{t('newChat')}</TooltipContent>
             </Tooltip>
           )}
         </div>
@@ -556,10 +556,10 @@ export function ChatPanel({
                 </div>
 
                 <h3 className="mb-3 text-2xl font-semibold text-[var(--text-primary)]">
-                  Start a conversation
+                  {t('startConversation')}
                 </h3>
                 <p className="mb-8 max-w-md text-[var(--text-secondary)]">
-                  Ask questions about your sources and get AI-powered insights with citations.
+                  {t('startDescription')}
                 </p>
 
                 {/* Notebook Summary */}
@@ -571,30 +571,33 @@ export function ChatPanel({
 
                 {/* Suggested Questions */}
                 <div className="flex max-w-lg flex-wrap justify-center gap-2">
-                  {SUGGESTED_QUESTIONS.map((q) => (
-                    <Tooltip key={q}>
-                      <TooltipTrigger asChild>
-                        <motion.button
-                          whileHover={selectedSourcesCount > 0 ? { scale: 1.02 } : {}}
-                          whileTap={selectedSourcesCount > 0 ? { scale: 0.98 } : {}}
-                          onClick={() => selectedSourcesCount > 0 && onSendMessage(q)}
-                          disabled={sending || selectedSourcesCount === 0}
-                          className="rounded-xl border border-[rgba(255,255,255,0.1)] bg-[var(--bg-secondary)] px-4 py-2.5 text-sm text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[var(--bg-secondary)] disabled:hover:text-[var(--text-secondary)]"
-                        >
-                          {q}
-                        </motion.button>
-                      </TooltipTrigger>
-                      {selectedSourcesCount === 0 && (
-                        <TooltipContent>
-                          <p>Select sources first</p>
-                        </TooltipContent>
-                      )}
-                    </Tooltip>
-                  ))}
+                  {SUGGESTED_QUESTION_KEYS.map((key) => {
+                    const question = t(key);
+                    return (
+                      <Tooltip key={key}>
+                        <TooltipTrigger asChild>
+                          <motion.button
+                            whileHover={selectedSourcesCount > 0 ? { scale: 1.02 } : {}}
+                            whileTap={selectedSourcesCount > 0 ? { scale: 0.98 } : {}}
+                            onClick={() => selectedSourcesCount > 0 && onSendMessage(question)}
+                            disabled={sending || selectedSourcesCount === 0}
+                            className="rounded-xl border border-[rgba(255,255,255,0.1)] bg-[var(--bg-secondary)] px-4 py-2.5 text-sm text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[var(--bg-secondary)] disabled:hover:text-[var(--text-secondary)]"
+                          >
+                            {question}
+                          </motion.button>
+                        </TooltipTrigger>
+                        {selectedSourcesCount === 0 && (
+                          <TooltipContent>
+                            <p>{t('selectSourcesFirst')}</p>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    );
+                  })}
                 </div>
                 {selectedSourcesCount === 0 && totalSourcesCount > 0 && (
                   <p className="mt-4 text-sm text-[var(--text-tertiary)]">
-                    Select sources from the left panel to get started
+                    {t('selectSourcesHint')}
                   </p>
                 )}
               </motion.div>
@@ -609,11 +612,10 @@ export function ChatPanel({
                       className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
-                        className={`max-w-[85%] rounded-2xl px-5 py-4 ${
-                          msg.role === 'user'
-                            ? 'rounded-br-md bg-[var(--accent-primary)] text-white'
-                            : 'rounded-bl-md border border-[rgba(255,255,255,0.1)] bg-[var(--bg-secondary)]'
-                        } `}
+                        className={`max-w-[85%] rounded-2xl px-5 py-4 ${msg.role === 'user'
+                          ? 'rounded-br-md bg-[var(--accent-primary)] text-white'
+                          : 'rounded-bl-md border border-[rgba(255,255,255,0.1)] bg-[var(--bg-secondary)]'
+                          } `}
                       >
                         <MessageContent content={msg.content} citations={msg.citations} />
 
@@ -651,7 +653,7 @@ export function ChatPanel({
                                       <StickyNote className="h-3.5 w-3.5" />
                                     </Button>
                                   </TooltipTrigger>
-                                  <TooltipContent>Save as note</TooltipContent>
+                                  <TooltipContent>{t('saveAsNote')}</TooltipContent>
                                 </Tooltip>
                               )}
                             </div>
@@ -685,7 +687,7 @@ export function ChatPanel({
                             style={{ animationDelay: '400ms' }}
                           />
                         </div>
-                        <span className="text-sm text-[var(--text-tertiary)]">Thinking...</span>
+                        <span className="text-sm text-[var(--text-tertiary)]">{t('thinking')}</span>
                       </div>
                     </div>
                   </motion.div>
@@ -708,7 +710,7 @@ export function ChatPanel({
                 className="mb-3 flex items-center gap-2 rounded-xl border border-[var(--warning)]/20 bg-[var(--warning)]/10 px-4 py-2.5 text-sm text-[var(--warning)]"
               >
                 <AlertCircle className="h-4 w-4 shrink-0" />
-                <span>Select sources from the left panel for contextual answers</span>
+                <span>{t('selectSourcesWarning')}</span>
               </motion.div>
             )}
 
@@ -717,7 +719,7 @@ export function ChatPanel({
               <div className="relative flex-1">
                 <Textarea
                   ref={textareaRef}
-                  placeholder="Ask a question about your sources..."
+                  placeholder={t('inputPlaceholder')}
                   value={message}
                   onChange={(e) => onMessageChange(e.target.value)}
                   onKeyDown={handleKeyDown}
@@ -751,12 +753,13 @@ function MessageContent({ content, citations }: { content: string; citations: Ci
   const [activeCitation, setActiveCitation] = useState<number | null>(null);
   const [loadingSource, setLoadingSource] = useState<string | null>(null);
   const supabase = createClient();
+  const t = useTranslations('chat');
 
   // Open source file in new tab
   const viewSource = useCallback(
     async (citation: Citation) => {
       if (!citation.source_id) {
-        toast.error('Source not available');
+        toast.error(t('sourceNotAvailable'));
         return;
       }
 
@@ -772,7 +775,7 @@ function MessageContent({ content, citations }: { content: string; citations: Ci
         });
 
         if (!response.ok) {
-          throw new Error('Failed to get source URL');
+          throw new Error(t('failedToGetSourceUrl'));
         }
 
         const data = await response.json();
@@ -781,7 +784,7 @@ function MessageContent({ content, citations }: { content: string; citations: Ci
         }
       } catch (error) {
         console.error('Failed to view source:', error);
-        toast.error('Failed to open source');
+        toast.error(t('failedToOpenSource'));
       }
       setLoadingSource(null);
     },
@@ -863,7 +866,7 @@ function MessageContent({ content, citations }: { content: string; citations: Ci
                   {citationNumber}
                 </div>
                 <p className="flex-1 truncate text-sm font-medium text-[var(--text-primary)]">
-                  {citation?.source_name || 'Source'}
+                  {citation?.source_name || t('defaultSourceName')}
                 </p>
                 {citation?.file_path && (
                   <Button
@@ -878,7 +881,7 @@ function MessageContent({ content, citations }: { content: string; citations: Ci
                     ) : (
                       <>
                         <ExternalLink className="mr-1 h-3 w-3" />
-                        View
+                        {t('viewSource')}
                       </>
                     )}
                   </Button>
@@ -890,7 +893,7 @@ function MessageContent({ content, citations }: { content: string; citations: Ci
                 </p>
               ) : (
                 <p className="text-sm text-[var(--text-tertiary)] italic">
-                  Referenced from this source
+                  {t('referencedFromSource')}
                 </p>
               )}
             </div>
@@ -1000,7 +1003,7 @@ function MessageContent({ content, citations }: { content: string; citations: Ci
       <div className="prose prose-invert max-w-none">{renderContentWithCitations()}</div>
       {citations && citations.length > 0 && (
         <div className="mt-4 border-t border-[rgba(255,255,255,0.1)] pt-3">
-          <p className="mb-2 text-xs font-medium text-[var(--text-tertiary)]">Sources:</p>
+          <p className="mb-2 text-xs font-medium text-[var(--text-tertiary)]">{t('sourcesLabel')}</p>
           <div className="flex flex-wrap gap-2">
             {citations.map((citation, idx) => (
               <Popover key={idx}>
@@ -1035,7 +1038,7 @@ function MessageContent({ content, citations }: { content: string; citations: Ci
                           ) : (
                             <>
                               <ExternalLink className="mr-1 h-3 w-3" />
-                              View
+                              {t('viewSource')}
                             </>
                           )}
                         </Button>
@@ -1047,7 +1050,7 @@ function MessageContent({ content, citations }: { content: string; citations: Ci
                       </p>
                     ) : (
                       <p className="text-sm text-[var(--text-tertiary)] italic">
-                        Referenced from this source
+                        {t('referencedFromSource')}
                       </p>
                     )}
                   </div>

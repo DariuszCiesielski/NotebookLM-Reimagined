@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { ThemeSelector } from '@/components/ui/theme-selector';
 import { LanguageSelector } from '@/components/ui/language-selector';
 import { createClient } from '@/lib/supabase';
+import { useTranslations } from 'next-intl';
 
 interface Profile {
   id: string;
@@ -42,6 +43,7 @@ export function DashboardHeader({
 }: DashboardHeaderProps) {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const t = useTranslations();
 
   useEffect(() => {
     async function loadProfile() {
@@ -49,24 +51,34 @@ export function DashboardHeader({
 
       try {
         const supabase = createClient();
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (!session) return;
 
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://notebooklm-api.vercel.app';
-        const response = await fetch(`${apiUrl}/api/v1/profile`, {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        });
+        // Load profile directly from Supabase
+        // Note: schema uses 'name' column, not 'display_name'
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id, name, avatar_url')
+          .eq('id', user.id)
+          .single();
 
-        if (response.ok) {
-          const data = await response.json();
-          setProfile(data);
+        if (!error && data) {
+          setProfile({
+            id: data.id,
+            display_name: data.name,
+            avatar_url: data.avatar_url,
+            email: user.email || '',
+          });
+        } else {
+          // If profile doesn't exist or table doesn't exist, use user data
+          setProfile({
+            id: user.id,
+            display_name: null,
+            avatar_url: null,
+            email: user.email || '',
+          });
         }
       } catch (error) {
-        console.error('Failed to load profile:', error);
+        // Silently fail - use email as fallback
+        console.warn('Profile fetch failed, using email as display name');
       }
     }
 
@@ -201,7 +213,7 @@ export function DashboardHeader({
         <div className="relative">
           <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)]" />
           <Input
-            placeholder="Search notebooks..."
+            placeholder={t('dashboard.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             className="h-10 rounded-xl border-[var(--border)] bg-[var(--bg-tertiary)] pl-10 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--accent-primary)]"
@@ -258,20 +270,20 @@ export function DashboardHeader({
           >
             <div className="px-2 py-2">
               <p className="text-sm font-medium text-[var(--text-primary)]">{displayName}</p>
-              <p className="text-xs text-[var(--text-tertiary)]">Free Plan</p>
+              <p className="text-xs text-[var(--text-tertiary)]">{t('profile.freePlan')}</p>
             </div>
             <DropdownMenuSeparator className="bg-[var(--border)]" />
             <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/profile')}>
               <User className="mr-2 h-4 w-4" />
-              Profile
+              {t('profile.title')}
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/settings')}>
               <Key className="mr-2 h-4 w-4" />
-              API Keys
+              {t('profile.apiKeys')}
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/settings')}>
               <Settings className="mr-2 h-4 w-4" />
-              Settings
+              {t('settings.title')}
             </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-[var(--border)]" />
             <DropdownMenuItem
@@ -279,7 +291,7 @@ export function DashboardHeader({
               className="cursor-pointer text-[var(--error)] focus:text-[var(--error)]"
             >
               <LogOut className="mr-2 h-4 w-4" />
-              Log out
+              {t('auth.logout')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

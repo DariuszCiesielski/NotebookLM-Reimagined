@@ -6,6 +6,7 @@ import { Plus, BookOpen, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 import { FeaturedCarousel } from '@/components/dashboard/featured-carousel';
 import { DashboardHeader } from '@/components/dashboard/header';
@@ -39,6 +40,7 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations();
 
   useEffect(() => {
     const checkUser = async () => {
@@ -245,7 +247,7 @@ export default function Dashboard() {
             className="btn-hover h-10 rounded-xl bg-[var(--accent-primary)] px-4 font-medium text-white hover:bg-[var(--accent-primary)]/90"
           >
             <Plus className="mr-2 h-4 w-4" />
-            New Notebook
+            {t('dashboard.createNew')}
           </Button>
         </motion.div>
 
@@ -263,12 +265,12 @@ export default function Dashboard() {
                 <BookOpen className="h-10 w-10 text-[var(--text-tertiary)]" />
               </div>
               <h3 className="mb-2 text-xl font-semibold text-[var(--text-primary)]">
-                {searchQuery ? 'No notebooks found' : 'No notebooks yet'}
+                {searchQuery ? t('dashboard.noResults') : t('dashboard.empty')}
               </h3>
               <p className="mb-6 max-w-sm text-center text-[var(--text-secondary)]">
                 {searchQuery
-                  ? 'Try a different search term'
-                  : 'Create your first notebook to start researching with AI-powered insights'}
+                  ? t('dashboard.tryDifferentSearch')
+                  : t('dashboard.emptyDescription')}
               </p>
               {!searchQuery && (
                 <Button
@@ -276,7 +278,7 @@ export default function Dashboard() {
                   className="btn-hover h-11 rounded-xl bg-[var(--accent-primary)] px-6 font-medium text-white hover:bg-[var(--accent-primary)]/90"
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  Create Notebook
+                  {t('notebook.create')}
                 </Button>
               )}
             </motion.div>
@@ -320,27 +322,26 @@ export default function Dashboard() {
       <Dialog open={dialogOpen} onOpenChange={(open) => !open && resetDialog()}>
         <DialogContent className="border-[rgba(255,255,255,0.1)] bg-[var(--bg-secondary)] sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-[var(--text-primary)]">Create New Notebook</DialogTitle>
+            <DialogTitle className="text-[var(--text-primary)]">{t('notebook.createTitle')}</DialogTitle>
             <DialogDescription className="text-[var(--text-secondary)]">
-              Start a new research project with AI-powered insights.
+              {t('notebook.createDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             {/* Emoji Picker */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[var(--text-primary)]">Icon</label>
+              <label className="text-sm font-medium text-[var(--text-primary)]">{t('notebook.icon')}</label>
               <div className="flex flex-wrap gap-2">
                 {EMOJI_OPTIONS.map((emoji) => (
                   <button
                     key={emoji}
                     type="button"
                     onClick={() => setSelectedEmoji(emoji)}
-                    className={`flex h-10 w-10 items-center justify-center rounded-xl text-xl transition-all ${
-                      selectedEmoji === emoji
-                        ? 'bg-[var(--accent-primary)]/20 ring-2 ring-[var(--accent-primary)]'
-                        : 'bg-[var(--bg-tertiary)] hover:bg-[var(--bg-surface)]'
-                    } `}
+                    className={`flex h-10 w-10 items-center justify-center rounded-xl text-xl transition-all ${selectedEmoji === emoji
+                      ? 'bg-[var(--accent-primary)]/20 ring-2 ring-[var(--accent-primary)]'
+                      : 'bg-[var(--bg-tertiary)] hover:bg-[var(--bg-surface)]'
+                      } `}
                   >
                     {emoji}
                   </button>
@@ -350,9 +351,9 @@ export default function Dashboard() {
 
             {/* Name Input */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[var(--text-primary)]">Name</label>
+              <label className="text-sm font-medium text-[var(--text-primary)]">{t('notebook.name')}</label>
               <Input
-                placeholder="My Research Project"
+                placeholder={t('notebook.namePlaceholder')}
                 value={newNotebookName}
                 onChange={(e) => setNewNotebookName(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && createNotebook()}
@@ -363,10 +364,10 @@ export default function Dashboard() {
             {/* Description Input */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-[var(--text-primary)]">
-                Description <span className="text-[var(--text-tertiary)]">(optional)</span>
+                {t('notebook.description')} <span className="text-[var(--text-tertiary)]">({t('common.optional')})</span>
               </label>
               <Textarea
-                placeholder="What is this notebook about?"
+                placeholder={t('notebook.descriptionPlaceholder')}
                 value={newNotebookDescription}
                 onChange={(e) => setNewNotebookDescription(e.target.value)}
                 className="resize-none rounded-xl border-[rgba(255,255,255,0.1)] bg-[var(--bg-tertiary)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--accent-primary)]"
@@ -381,7 +382,7 @@ export default function Dashboard() {
               onClick={resetDialog}
               className="rounded-xl border-[rgba(255,255,255,0.1)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]"
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               onClick={createNotebook}
@@ -389,7 +390,7 @@ export default function Dashboard() {
               className="btn-hover rounded-xl bg-[var(--accent-primary)] text-white hover:bg-[var(--accent-primary)]/90"
             >
               {creating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Notebook
+              {t('notebook.create')}
             </Button>
           </DialogFooter>
         </DialogContent>

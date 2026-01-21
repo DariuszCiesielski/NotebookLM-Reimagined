@@ -18,6 +18,7 @@ import {
   MoreVertical,
 } from 'lucide-react';
 import { useState, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -82,6 +83,8 @@ export function SourcesPanel({
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [sourceToDelete, setSourceToDelete] = useState<Source | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations('sources');
+  const tCommon = useTranslations('common');
 
   const handleDeleteClick = (source: Source) => {
     setSourceToDelete(source);
@@ -194,11 +197,11 @@ export function SourcesPanel({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Badge className="border-0 bg-[var(--bg-tertiary)] text-xs text-[var(--text-secondary)]">
-              {sources.length} source{sources.length !== 1 ? 's' : ''}
+              {sources.length} {sources.length === 1 ? t('source') : t('sourcesPlural')}
             </Badge>
             {selectedSources.size > 0 && (
               <Badge className="border-0 bg-[var(--accent-primary)]/20 text-xs text-[var(--accent-primary)]">
-                {selectedSources.size} selected
+                {selectedSources.size} {t('selected')}
               </Badge>
             )}
           </div>
@@ -208,7 +211,7 @@ export function SourcesPanel({
             className="h-8 rounded-lg bg-[var(--accent-primary)] px-3 text-white hover:bg-[var(--accent-primary)]/90"
           >
             <Plus className="mr-1.5 h-3.5 w-3.5" />
-            Add
+            {t('addButton')}
           </Button>
         </div>
 
@@ -217,7 +220,7 @@ export function SourcesPanel({
             onClick={onSelectAll}
             className="mt-3 text-xs text-[var(--text-tertiary)] transition-colors hover:text-[var(--text-secondary)]"
           >
-            {selectedSources.size === sources.length ? 'Deselect all' : 'Select all'}
+            {selectedSources.size === sources.length ? t('deselectAll') : t('selectAll')}
           </button>
         )}
       </div>
@@ -234,9 +237,9 @@ export function SourcesPanel({
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--bg-tertiary)]">
                 <FileText className="h-6 w-6 text-[var(--text-tertiary)]" />
               </div>
-              <p className="mb-1 font-medium text-[var(--text-primary)]">No sources yet</p>
+              <p className="mb-1 font-medium text-[var(--text-primary)]">{t('noSourcesYet')}</p>
               <p className="mb-4 text-center text-sm text-[var(--text-tertiary)]">
-                Add documents to start analyzing
+                {t('addDocuments')}
               </p>
               <Button
                 size="sm"
@@ -244,7 +247,7 @@ export function SourcesPanel({
                 className="rounded-lg bg-[var(--accent-primary)] text-white hover:bg-[var(--accent-primary)]/90"
               >
                 <Plus className="mr-1.5 h-4 w-4" />
-                Add Source
+                {t('add')}
               </Button>
             </motion.div>
           ) : (
@@ -314,7 +317,7 @@ export function SourcesPanel({
                             className="cursor-pointer text-[var(--text-primary)] focus:bg-[var(--bg-tertiary)]"
                           >
                             <Eye className="mr-2 h-4 w-4" />
-                            View
+                            {t('view')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={(e) => {
@@ -324,7 +327,7 @@ export function SourcesPanel({
                             className="cursor-pointer text-[var(--error)] focus:bg-[var(--error)]/10 focus:text-[var(--error)]"
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
+                            {t('delete')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -341,9 +344,9 @@ export function SourcesPanel({
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="border-[rgba(255,255,255,0.1)] bg-[var(--bg-secondary)] sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-[var(--text-primary)]">Add Source</DialogTitle>
+            <DialogTitle className="text-[var(--text-primary)]">{t('dialogTitle')}</DialogTitle>
             <DialogDescription className="text-[var(--text-secondary)]">
-              Add documents, URLs, or text to your notebook for AI analysis.
+              {t('dialogDescription')}
             </DialogDescription>
           </DialogHeader>
 
@@ -358,28 +361,28 @@ export function SourcesPanel({
                 className="rounded-lg text-xs data-[state=active]:bg-[var(--bg-surface)] data-[state=active]:text-[var(--text-primary)]"
               >
                 <Upload className="mr-1.5 h-3.5 w-3.5" />
-                File
+                {t('fileTab')}
               </TabsTrigger>
               <TabsTrigger
                 value="youtube"
                 className="rounded-lg text-xs data-[state=active]:bg-[var(--bg-surface)] data-[state=active]:text-[var(--text-primary)]"
               >
                 <Youtube className="mr-1.5 h-3.5 w-3.5" />
-                YouTube
+                {t('youtubeTab')}
               </TabsTrigger>
               <TabsTrigger
                 value="url"
                 className="rounded-lg text-xs data-[state=active]:bg-[var(--bg-surface)] data-[state=active]:text-[var(--text-primary)]"
               >
                 <LinkIcon className="mr-1.5 h-3.5 w-3.5" />
-                URL
+                {t('urlTab')}
               </TabsTrigger>
               <TabsTrigger
                 value="text"
                 className="rounded-lg text-xs data-[state=active]:bg-[var(--bg-surface)] data-[state=active]:text-[var(--text-primary)]"
               >
                 <Type className="mr-1.5 h-3.5 w-3.5" />
-                Text
+                {t('textTab')}
               </TabsTrigger>
             </TabsList>
 
@@ -411,10 +414,10 @@ export function SourcesPanel({
                     />
                     <div className="text-center">
                       <p className="text-sm font-medium text-[var(--text-primary)]">
-                        {isDragging ? 'Drop file here' : 'Drag & drop or click to upload'}
+                        {isDragging ? t('dropFile') : t('dragDrop')}
                       </p>
                       <p className="mt-0.5 text-xs text-[var(--text-tertiary)]">
-                        PDF, DOCX, TXT, or MD
+                        {t('fileTypes')}
                       </p>
                     </div>
                   </>
@@ -425,7 +428,7 @@ export function SourcesPanel({
             <TabsContent value="youtube" className="mt-4 space-y-3">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[var(--text-primary)]">
-                  YouTube URL
+                  {t('youtubeUrl')}
                 </label>
                 <Input
                   placeholder="https://youtube.com/watch?v=..."
@@ -436,7 +439,7 @@ export function SourcesPanel({
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[var(--text-primary)]">
-                  Name (optional)
+                  {t('nameOptional')}
                 </label>
                 <Input
                   placeholder="My video"
@@ -450,7 +453,7 @@ export function SourcesPanel({
             <TabsContent value="url" className="mt-4 space-y-3">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[var(--text-primary)]">
-                  Website URL
+                  {t('websiteUrl')}
                 </label>
                 <Input
                   placeholder="https://example.com/article"
@@ -461,7 +464,7 @@ export function SourcesPanel({
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[var(--text-primary)]">
-                  Name (optional)
+                  {t('nameOptional')}
                 </label>
                 <Input
                   placeholder="Article name"
@@ -474,7 +477,7 @@ export function SourcesPanel({
 
             <TabsContent value="text" className="mt-4 space-y-3">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[var(--text-primary)]">Name</label>
+                <label className="text-sm font-medium text-[var(--text-primary)]">{t('name')}</label>
                 <Input
                   placeholder="My notes"
                   value={sourceName}
@@ -483,9 +486,9 @@ export function SourcesPanel({
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[var(--text-primary)]">Content</label>
+                <label className="text-sm font-medium text-[var(--text-primary)]">{t('content')}</label>
                 <Textarea
-                  placeholder="Paste your text here..."
+                  placeholder={t('pastePlaceholder')}
                   value={sourceInput}
                   onChange={(e) => setSourceInput(e.target.value)}
                   rows={6}
@@ -518,12 +521,12 @@ export function SourcesPanel({
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--error)]/10">
                 <Trash2 className="h-5 w-5 text-[var(--error)]" />
               </div>
-              <DialogTitle className="text-[var(--text-primary)]">Delete Source</DialogTitle>
+              <DialogTitle className="text-[var(--text-primary)]">{t('deleteSource')}</DialogTitle>
             </div>
             <DialogDescription className="text-[var(--text-secondary)]">
-              Are you sure you want to delete{' '}
+              {t('deleteConfirmMessage')}{' '}
               <span className="font-medium text-[var(--text-primary)]">{sourceToDelete?.name}</span>
-              ? This action cannot be undone.
+              {t('cannotUndo')}
             </DialogDescription>
           </DialogHeader>
 
@@ -533,14 +536,14 @@ export function SourcesPanel({
               onClick={() => setDeleteConfirmOpen(false)}
               className="flex-1 rounded-xl border-[rgba(255,255,255,0.1)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] sm:flex-none"
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               onClick={confirmDelete}
               className="flex-1 rounded-xl bg-[var(--error)] text-white hover:bg-[var(--error)]/90 sm:flex-none"
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              Delete
+              {t('delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
